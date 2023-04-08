@@ -1,0 +1,748 @@
+---
+title: "New tools for visualising and explaining multivariate spatio-temporal data"
+date: 2023-04-17
+date-format: medium
+author: 
+ - name: "H. Sherry Zhang, PhD stduent"
+institute: "Monash University, Australia"
+title-slide-attributes: 
+  data-background-image: "figures/logo-all.png"
+  data-background-size: "25%"
+  data-background-position: "75% 65%"
+format: 
+  monash-revealjs:
+    multiplex: false
+    slide-number: true
+    show-slide-number: all
+    controls: true
+execute:
+  echo: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = FALSE, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      cache = TRUE,
+                      fig.align='center')
+library(tidyverse)
+library(ferrn)
+library(ggside)
+library(GGally)
+library(patchwork)
+library(tsibble)
+library(lubridate)
+library(cubble)
+library(icon)
+```
+
+# Hi!{.smaller}
+
+::: columns
+::: {.column width="55%"}
+
+-   A final year PhD student in the Department of Econometrics and Business Statistics, Monash University, Australia
+
+-   My research centers on exploring multivariate spatio-temporal data with data wrangling and visualisation tool.
+
+-   Find me on
+
+    -   Twitter: `huizezhangsh`,
+    -   GitHub: `huizezhang-sherry`, and
+    -   `https://huizezhangsh.netlify.app/`
+:::
+
+::: {.column width="45%"}
+```{r}
+knitr::include_graphics(here::here("figures/headshot.jpg"))
+```
+:::
+:::
+
+::: notes
+
+  - Thanks for the invitation to speak
+
+  - Today I will be talking about ...
+
+  - First, a little bit about myself
+
+  - I'm Sherry Zhang, ...
+  
+  - ...
+  
+  - Here are the details to find me on Twitter, GitHub, and my website
+
+:::
+
+
+##  {background-image="figures/overview.png" background-size="80%" background-position="bottom 30px"}
+
+::: notes
+<!-- Hi everyone, my name is Sherry and today I will be giving my pre-submission talk titled: New tools for visualising and explaining multivariate spatio-temporal data.  -->
+
+<!-- I will first give an overview of my research theme, report the up-to-date progression, and then proceed to the three thesis chapters. -->
+
+Multivariate spatio-temporal data can be commonly found in the society: in finance and economics, stock prices and economic indicators are tracked over time; in logistics, supermarkets collect product level data to decide the optimal stock levels for different stores; in meteorology, weather stations record climate variables to monitor climate change and its impact on different sectors.
+
+Spatio-temporal data are recorded with data-time and geographic location information. Multivariate means that multiple variables are recorded. This could include, for example, in weather station data, temperature, precipitation, wind speed and direction
+
+However, all three aspects are ideally considered together to tackle contemporary problems, such as monitoring droughts which requires historical climate data to understand "normal" conditions for any spatial neighborhood, and the interplay of precipitation, temperature and other relevant variable(s), for example, ice melt for high altitude mountain region.
+
+This research addresses the challenge of investigating multivariate spatio-temporal data, by providing new tools for organising, visualizing and explaining relationships.
+
+This illustration here shows how the three research topics are related. The solutions are to provide easy ways to pivot between the three components, to allow focusing on multivariate or spatio-temporal analysis and new pipelines to construct indexes.
+
+When fixing the time, the data are reduced to multivariate and can be analyzed using multivariate methods such as dimension reduction. The particular dimension reduction investigated in this thesis is called projection pursuit, which contains an optimization component. Diagnostic plots can be useful here to track the performance of these optimization algorithms.
+
+When the data are collected at different locations in space, software from geoinformatics can be useful to analyze the spatial aspect of the data. However, existing spatial and temporal data analysis software are built upon different data formats. This creates frictions in the data analysis to constantly rearrange that data format to work with the software. We designed a spatio-temporal data structure to organise the data.
+
+Multivariate spatio-temporal variables are often combined into a single index series for decision making. But index definition and construction are vastly different in different fields and different researchers making it diﬀicult to understand how they might perform slight changes in the formula, or how competing indexes compare.
+:::
+
+# Visual diagnostics for constrained optimisation with application to guided tours{ background-image="figures/logo-ferrn.png" background-size="10%" background-position="top 3% right 3%"}
+
+## Projection pursuit for dimension reduction
+
+::: columns
+::: column
+```{r joint-dist}
+#| fig-width: 5
+#| fig-height: 5
+set.seed(123)
+dt <- tibble::tibble(
+  x5 = sample(c(rnorm(330, -5, 1), rnorm(340, 0, 1), rnorm(330, 5, 1)), size = 1000),
+  x6 = sample(c(rnorm(400, -5, 1), rnorm(200, 0, 1), rnorm(400, 5, 1)), size = 1000),
+  mult = x5 * x6
+)
+
+my <- colorRampPalette(c("#443750","#FFEECF"))
+
+dt %>%
+  ggplot() +
+  geom_density_2d_filled(aes(x = x5, y = x6)) +
+  geom_xsidedensity(aes(x = x5,y = after_stat(density)), fill = "#FFEECF") +
+  geom_ysidedensity(aes(x = after_stat(density), y = x6), fill = "#443750")  + 
+  scale_fill_manual(values = my(11)) +
+  theme_void() + 
+  theme(legend.position = "none",
+        aspect.ratio = 1, 
+        axis.title = element_text(),
+        ggside.panel.scale = .3) +
+  labs(x = "X1", y = "X2") 
+  
+
+```
+:::
+
+::: column
+```{r 1d-projections}
+#| fig-height: 6
+#| fig-width: 5.5
+vec <- seq(0, 1, 0.05)
+weight <- matrix(c(rev(vec), sqrt(1 - rev(vec)^2)), ncol = 2) %>% t()
+data <- dt %>% select(x5, x6) %>% as.matrix()
+proj <- as_tibble(data %*% weight) %>% mutate(id = row_number())
+matrix <- t(weight) %>% as_tibble() %>% transmute(matrix = glue::glue("[{round(V1,4)}, {round(V2, 4)}]"), proj = 1:21)
+
+
+proj %>%
+  tidyr::pivot_longer(cols = -id, names_to = "proj", values_to = "value") %>%
+  mutate(proj = as.numeric(parse_number(proj))) %>%
+  left_join(matrix, by = "proj") %>%
+  mutate(fill = case_when(matrix == "[1, 0]" ~ "#443750",
+                          matrix == "[0, 1]" ~ "#FFEECF",
+                          TRUE ~ "#840032")) %>% 
+  ggplot() +
+  geom_density(aes(x = value, group = proj, fill = fill)) +
+  facet_wrap(vars(matrix), ncol = 4, labeller = label_value) +
+  scale_fill_manual(values = c("#FFEECF", "#840032", "#443750")) + 
+  theme_void() +
+  theme(strip.text = element_text(size = 15, margin = margin(0, 0, 0.2, 0, "cm")), legend.position = "none")
+```
+:::
+:::
+
+::: notes
+I will first use a simple example to explain the projection pursuit algorithm, before showing two visualisation on diagnosing the optimisers.
+
+On the left is a density plot with the marginal distribution of the two variables on the top and right. We can construct a projection matrix and multiple it with the data to get a projection. 
+
+On the right are 21 projection matrices and their corresponding projections. If we give X1 zero weight and X2 full weight, you will get the distribution of X2 as in the first panel on the right. Similarly, ....
+
+Sometimes, the interesting structure in the high-dimensional data may be unknown and we could use a grand tour to randomly generate projection matrices and view the projections. Once we have some ideas of the structure we're looking for, for example, clusters or central mass, we will choose an index function, which maps the projection to a single value. The guided tour uses optimisation to maximum the index function given the projection matrices.
+
+:::
+
+## Optimisation in projection pursuit 
+
+::: columns
+::: column
+Data: $\mathbf{X}_{n \times p}$; 
+
+Projection matrix: $\mathbf{A}_{p\times d}$
+
+Projection: $\mathbf{Y}_{n \times d} = \mathbf{X} \cdot \mathbf{A}$
+
+Index function $f: \mathbb{R}^{n \times d} \mapsto \mathbb{R}$
+
+Optimisation: $$\arg \max_{\mathbf{A}} f(\mathbf{X} \cdot \mathbf{A})  ~~~ s.t. ~~~ \mathbf{A}^{\prime} \mathbf{A} = I_d$$
+:::
+
+::: column
+:::
+:::
+
+::: notes
+We can put these into notations. The data $X$ is n \* p, N being the number of observation and P being the original data dimension. The projection matrix A, has dimension of p \* d. The projection that multiply X and A will be the data in the lower dimension d.
+
+The index function maps the projection into a single scale, which will be optimized over the space of A. Also the projection matrices have to subject to the orthonormality condition to be a projection matrix.
+
+We use stochastic optimisers for this problem. These optimisers repetitively generate projection matrices, decide if to accept or reject the new position, to find the maximum. This optimisation problem differs from a common problem in that the input, A, is a matrix that contains p * d numbers. It is not easy to understand where in the matrix space, the optimisers have visited, so we would like some visual tools to help here. 
+
+:::
+
+## Visualise the projection matrix space {.smaller}
+
+::: columns
+::: column
+Data: $\mathbf{X}_{n \times p}$; 
+
+Projection matrix: $\mathbf{A}_{p\times d}$
+
+Projection: $\mathbf{Y}_{n \times d} = \mathbf{X} \cdot \mathbf{A}$
+
+Index function $f: \mathbb{R}^{n \times d} \mapsto \mathbb{R}$
+
+Optimisation: $$\arg \max_{\mathbf{A}} f(\mathbf{X} \cdot \mathbf{A})  ~~~ s.t. ~~~ \mathbf{A}^{\prime} \mathbf{A} = I_d$$
+
+Simulation: 
+
+  * simulated 5D data project to 1D 
+  * two optimisers
+
+:::
+
+::: column
+```{r}
+#| fig-width: 6
+#| fig-height: 6
+bind_rows(holes_1d_geo, holes_1d_better) %>%
+  bind_theoretical(matrix(c(0, 1, 0, 0, 0), nrow = 5),
+                   index = tourr::holes(), raw_data = boa5)  %>%
+  explore_space_pca(group = method, details = TRUE,
+                    interp_size = 1) +
+  scale_color_discrete_botanical() +
+  theme(legend.text = element_text(size = "10pt"))
+```
+:::
+:::
+
+:::{.notes}
+
+In this example, we simulated 5D data and project them into 1D.
+
+Because the data is simulated, we know the projection matrix that gives the most interesting projection, which is the star here. 
+
+Viewing a 5D space can be challenging, so here, we perform a PCA on all the bases to obtain a 2D view. 
+
+Because of the orthonormality condition, the domain for 1D projection is a p-d unit sphere and it becomes a circle when further reduced by PCA.
+
+Here you can see how the two optimisers progress from the start to find the maximum.
+
+:::
+
+## Visualise the projection matrix space
+
+::: columns
+::: column
+```{r}
+#| fig-width: 6
+#| fig-height: 6
+bind_rows(holes_1d_geo, holes_1d_better) %>%
+  bind_theoretical(matrix(c(0, 1, 0, 0, 0), nrow = 5),
+                   index = tourr::holes(), raw_data = boa5)  %>%
+  explore_space_pca(group = method, details = TRUE,
+                    interp_size = 1) +
+  scale_color_discrete_botanical() +
+  theme(legend.text = element_text(size = "10pt"))
+```
+:::
+
+::: column
+```{r}
+#| fig-width: 6
+#| fig-height: 6
+dt <- dplyr::bind_rows(holes_1d_geo, holes_1d_better) %>%
+  bind_theoretical(matrix(c(0, 1, 0, 0, 0), nrow = 5),
+                   index = tourr::holes(), raw_data = boa5)
+dt %>%
+  explore_space_pca(group = method, animate = TRUE, interp_size = 1,
+                    theo_size = 20, start_size = 3, end_size = 5) +   
+  scale_color_discrete_botanical(palette = "fern")
+```
+:::
+:::
+
+
+
+## Visualise the projection matrix space
+
+::: columns
+::: column
+```{r}
+#| fig-width: 6
+#| fig-height: 6
+bind_rows(holes_1d_geo, holes_1d_better) %>%
+  bind_theoretical(matrix(c(0, 1, 0, 0, 0), nrow = 5),
+                   index = tourr::holes(), raw_data = boa5)  %>%
+  explore_space_pca(group = method, details = TRUE,
+                    interp_size = 1) +
+  scale_color_discrete_botanical() +
+  theme(legend.text = element_text(size = "10pt"))
+```
+:::
+
+::: column
+```{r}
+knitr::include_graphics("figures/tour-dynamic.gif")
+```
+:::
+:::
+
+# Cubble: An R package for organizing and wrangling multivariate spatio-temporal data in R {background-image="figures/logo-cubble.png" background-size="10%" background-position="top 3% right 3%"}
+
+## Motivation
+
+:::columns
+:::column
+```{r}
+knitr::include_graphics("figures/sf-df.png")
+knitr::include_graphics("figures/sf-logo.gif")
+```
+:::
+
+:::column
+```{r out.height="80%", out.height="80%"}
+knitr::include_graphics("figures/tsibble-df.png")
+```
+
+```{r out.height="30%", out.width="30%"}
+knitr::include_graphics("figures/tsibble-logo.svg")
+```
+
+:::
+
+:::
+<!-- -   In a long table with duplicated spatial variables? That would give a lot of duplication if daily data & large spatial objects. -->
+
+<!-- -   Sometimes, we would like to make per station summary, ideally, each station forms a row. -->
+
+<!-- -   Other time, we would like to work on temporal variables in the long form. -->
+
+<!-- -   A lot of padding work to arrange the spatio-temporal data in the format convenient for spatial & temporal operations! -->
+
+:::{.notes}
+If you have worked with spatial data in R, you will probably know about the sf package. In an oversimplified term, the package uses nested list to wrap up coordinates into a special column, geom. The package also connects to external libraries that allow us to do geospatial operations.
+
+On the other hand, we have tsibble that arranges time series data into a long form with explicit column for the time variable. 
+:::
+
+## Australian weather station data {.smaller}
+
+```{r echo = FALSE}
+stations <- cubble::climate_subset %>% select(-ts)
+ts <- cubble::climate_subset %>% 
+  face_temporal() %>% 
+  filter(!is.na(tmax), !is.na(tmin)) %>% 
+  as_tibble()
+oz <- ozmaps::abs_ste %>% filter(NAME != "Other Territories")
+oz_simp <- oz %>% rmapshaper::ms_simplify(keep = 0.05) 
+```
+
+::: columns
+::: {.column width="60%"}
+```{r}
+#| echo: true
+stations
+```
+
+```{r data-stations}
+#| echo: false
+#| eval: true
+ggplot() +
+  geom_sf(data = oz_simp, fill = "grey90", color = "white") +
+  geom_point(data = stations, aes(long,lat)) + 
+  ggthemes::theme_map()
+```
+:::
+
+::: {.column width="40%"}
+```{r}
+#| echo: true
+ts
+```
+
+```{r data-ts}
+ts %>% 
+  ggplot() +
+  geom_line(aes(x = date, y = tmax, group = id), alpha = 0.4) + 
+  theme_bw()
+```
+:::
+:::
+
+:::{.notes}
+
+Initially I was working with climate data where I have 30 weather stations and its spatial information and time series data to record the daily climate variables in 2020. I was trying to use sf to handle the spatial side and tsibble to handle the temporal side. But the two packages do not work well with each other. This is expected since neither sf or tsibble is designed to handle spatio-temporal data. 
+
+This motivates me to think about the spatio-temporal data structure in R. 
+:::
+
+## What's available for spatio-temporal data? - stars
+
+:::columns
+:::column
+```{r out.width="80%", out.height="60%"}
+knitr::include_graphics("figures/stars-model.png")
+```
+
+:::
+
+:::column
+```{r}
+knitr::include_graphics("figures/stars-df.png")
+```
+:::
+
+:::
+
+:::{.notes}
+What's available at that time is a package called `stars`, it uses a dense array to structure spatio-temporal data. You can think of it as stacking snapshots of the space along the time axis.
+
+This is great for satellite data, but it may not be the most obvious solution for analysts who prefer to operate on a 2D table format. 
+
+Hence, I designed a data structure called cubble to handle saptio-temporal vector data.
+:::
+
+
+## Cubble: a spatio-temporal vector data structure
+
+```{r}
+knitr::include_graphics(here::here("figures/long-nested-form.png"))
+```
+
+::: footer
+<https://huizezhang-sherry.github.io/cubble/articles/cubble-design.html>
+:::
+
+:::{.notes}
+Cubble is a nested object built on tibble that allow easy pivoting between the spatial and temporal form.
+
+The nested form is similar to the sf data frame you seen before, with an additional list column called ts that nests all the temporal variables
+
+The long form mimics the long table in tsibble where each row is cross identified by the site and date in a long table
+:::
+
+## Cubble: a spatio-temporal vector data structure
+
+Cubble is a nested object built on tibble that allow easy pivoting between spatial and temporal form.
+
+```{r}
+knitr::include_graphics(here::here("figures/cubble-operations.png"))
+```
+
+
+:::{.notes}
+
+What cubble do is to provide a linking between the two forms through the pair `face_temporal()` and `face_spatial()`. 
+  
+With `face_temporal()`, the focus of the data is now on the temporal face of the spatio-temporal cube and this corresponds to switch the data to the long form. 
+  
+With `face_spatial()`, the long cubble is switched back to the nested form, the spatial face of the datacube.
+:::
+
+## Cast your data into a cubble
+
+```{r echo = TRUE}
+#| code-line-numbers: "2|3"
+(weather <- as_cubble(
+  list(spatial = stations, temporal = ts),
+  key = id, index = date, coords = c(long, lat)
+))
+```
+
+-   the spatial data (`stations`) can be an `sf` object and temporal data (`ts`) can be a `tsibble` object.
+
+::: notes
+
+  - To cast the two separate tables into a cubble, you can supply them in a named list.
+
+  - You also need to tell cubble some identifiers it looks for
+
+  - The `key` argument is the spatial identifier that connects the two tables.
+
+  - The `index` argument is the temporal identifier that prescribes the timestamp.
+
+  - The `coords` argument is to used to specify the coordinate
+  
+  [breath]
+
+  - From the cubble header, you can read that the key is `id`, there are 30 stations and it is in the nested form. 
+
+  - The third line here shows you the available temporal variables and their types. 
+
+  - Also, if the spatial and temporal data is an sf or tsibble object, they will be indicated in the header as well.
+
+
+:::
+
+## Switch between the two forms {.smaller}
+
+::: columns
+::: column
+long form
+
+```{r echo = FALSE}
+options(width = 50)
+```
+
+```{r face-temporal, echo = TRUE}
+(weather_long <- weather %>% 
+  face_temporal())
+```
+
+:::
+
+::: column
+back to the nested form:
+
+```{r}
+#| echo: true
+(weather_back <- weather_long %>% 
+   face_spatial())
+
+identical(weather_back, weather)
+```
+:::
+:::
+
+::: notes
+
+- Here is what a cubble look like when being switched between the long and the nested form. 
+
+  - With the `weather` object we just created, we turn it into the long form with the function `face_temporal()`
+
+-   Notice that the third line in the header now changes to see the available spatial variables
+
+[breath]
+
+-  On the right, `weather_long` is switched back the nested form with the function `face_spatial()` 
+
+- As you can see from the last line of code, `face_temporal()` and `face_spatial()` are the exact inverse. 
+
+- Hence `weather_back` and `weather` are identical
+:::
+
+## Access variables in the other form {.smaller}
+
+```{r}
+options(width = 100)
+```
+
+Reference temporal variables with `$`
+
+```{r}
+#| echo: true
+weather %>% 
+  mutate(avg_tmax = mean(ts$tmax, na.rm = TRUE))
+```
+
+. . .
+
+Move spatial variables into the long form
+
+```{r echo = TRUE}
+weather_long %>% unfold(long, lat)
+```
+
+::: notes
+
+  - Sometimes, you may need to access variables from the other form for your analysis. 
+
+  - For example, we may want to calculate some per station summary of the time series data. 
+  
+  - We can refer to the temporal variables from the nested form with the `$` sign.
+  
+  - Here I'm calculating the average maximum temperature across the whole year for each station and I need to get access to `tmax` from the list-column `ts`.
+
+  - In the long form, you need the cubble verb `unfold()` to move the spatial variables into the long form. 
+  
+  - Here I move the two coordinate columns into the long form and later we will see how it can help us to create a glyph map.
+
+:::
+
+# Explore temporal pattern across space {.text-bottom background-image="figures/temporal-pattern-across-space.png" background-size="80% 90%" background-position="center"}
+
+```{css echo=FALSE}
+.text-bottom h2{
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 30px 30px 30px 30px;
+  color: black; 
+  position: absolute;
+  top: 78%;
+  left: 3%;
+  font-size: 1.5em
+}
+```
+
+:::{.notes}
+Sometimes, although we technically have spatio-temporal data, we may choose to fix a few stations to explore their temporal patterns, or select a few timestamps to explore their spatial distributions. 
+
+A more holistic approach is to explore the space and time simultaneously and now we will see an example of how to use cubble to explore temporal pattern across space in a glyph map.
+
+:::
+
+## Why do you need a glyph map?
+
+<a different motivation for glyph map>
+
+:::{.notes}
+
+Here is a typical plot you may have seen when someone tries to visualise their spatio-temporal data. The x and y axes are the coordinates, here I simplify it with only two points, but in reality you may see a collection of points in space or a raster image. Each facet here shows the space in different timestamp and the values are mapped into color. 
+
+The problem of this type of visualisation is that it becomes difficult to comprehend the temporal structure of the data since you have to compare points at the same location across panels to digest the pattern. 
+
+:::
+
+## Why do you need a glyph map?
+
+<a different motivation>
+
+:::{.notes}
+
+Instead the temporal pattern is much easier to observe if shown in a time series plot. 
+
+What a glyph map do is to put the time series glyph in the place of the location, so you can see the temporal trend in the space. 
+
+:::
+
+
+
+## Glyph map transformation
+
+```{r}
+knitr::include_graphics(here::here("figures/glyph-steps.png"))
+```
+
+```{r eval = FALSE, echo = TRUE}
+DATA %>%
+  ggplot() +
+  geom_glyph(
+    aes(x_major = X_MAJOR, x_minor = X_MINOR,
+        y_major = Y_MAJOR, y_minor = Y_MINOR)) +
+  ...
+```
+
+::: footer
+<https://huizezhang-sherry.github.io/cubble/articles/glyph.html>
+:::
+
+::: notes
+  
+  - I have a short illustration to show you how the transformation works
+
+  - Here (1) shows a single station on the map with its long and lat coordinate and (2) is its associated time series. 
+  
+  - Here you know the range of your x and y axis and you can use linear algebra to transform them into a different scale. 
+  
+  - In step (3), the time series in still the same but its scale has been transformed to a width of 1 and heights of 0.3 and the center in this scale is where the original point lays. 
+  
+  -  Once we have the time series in the transformed axes, they can be placed onto the map as in (4)
+
+  - To make a glyph map, you can use the `geom_glyph` function from the cubble package.
+
+  - It requires a pair of major and a pair of minor variable as required aesthetics
+
+  - The major variable are the spatial coordinates, long and lat here and the minor variable are the temporal coordinates, date and tmax here.
+
+:::
+
+
+## Avg. max. temperature on the map {.smaller}
+
+```{r glyphmap}
+#| output-location: column
+#| echo: true
+#| fig-width: 7
+#| fig-height: 7
+cb <- as_cubble(
+  list(spatial = stations, temporal = ts),
+  key = id, index = date, coords = c(long, lat)
+)
+
+set.seed(0927)
+cb_glyph <- cb %>%
+  slice_sample(n = 20) %>%
+  face_temporal() %>%
+  mutate(month = lubridate::month(date)) %>%
+  group_by(month) %>% 
+  summarise(tmax = mean(tmax, na.rm = TRUE)) %>%
+  unfold(long, lat)
+
+ggplot() +
+  geom_sf(data = oz_simp, 
+          fill = "grey90", 
+          color = "white") +
+  geom_glyph(
+    data = cb_glyph,
+    aes(x_major = long, x_minor = month,
+        y_major = lat, y_minor = tmax),
+    width = 2, height = 0.7) + 
+  ggthemes::theme_map()
+```
+
+:::{.notes}
+ 
+Here is an example of using cubble
+
+First you create a cubble object with the `stations` and `ts` data using `as_cubble`. This by default creates the cubble in the nested form, easy for spatial operations. 
+
+The second block involves wrangling the data using the nested and long form. Sampling 20 stations is a spatial operations, so it is performed in the nested form. Then we need to do a summary of average maximum temperature by month. It is a temporal operation, so the cubble is then switched to the long form with `face_temporal()`. 
+  
+`unfold` is another cubble verb that moves the spatial variable into the long form temporarily. We need to do this because ggplot requires all the variables to be in the same table 
+  
+`geom_glyph()` is also implemented in cubble, it is intended to make a glyph map.
+  
+  [breath]
+  
+  - On the map, you can see that the temperature curve in the north and south (the Tasmania Island) are relative constant throughout the year. 
+  
+  - Those inland stations, for example in the eastern Australia, have a much visible variation in the year, as compared to the coastline ones.
+
+:::
+
+## Additional Information {.smaller background-image="figures/logo-all.png" background-size="25%" background-position="top 3% right 3%"}
+
+Slides created via quarto available at 
+
+<center> <https://sherryzhang-ireland2023.netlify.app/> </center> 
+
+All the materials used to prepare the slides are available at  
+
+<center><https://github.com/huizezhang-sherry/ireland2023></center>
+
+<br>
+
+`r fontawesome::fa("link")` cubble package: <https://CRAN.R-project.org/package=cubble>
+
+`r fontawesome::fa("link")` ferrn package: <https://CRAN.R-project.org/package=ferrn>
+
+`r fontawesome::fa("link")` ferrn paper: <https://doi.org/10.32614/RJ-2021-105>
+
+<br>
+
+H. Sherry Zhang 
+
+Supervised by Dianne Cook, Patricia Menéndez, Ursula Laa, and Nicolas Langrené
