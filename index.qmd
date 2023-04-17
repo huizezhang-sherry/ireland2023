@@ -1,6 +1,6 @@
 ---
 title: "New tools for visualising and explaining multivariate spatio-temporal data"
-date: 2023-04-17
+date: "2023-04-17"
 date-format: medium
 author: 
  - name: "H. Sherry Zhang, PhD stduent"
@@ -40,7 +40,7 @@ library(icon)
 # Hi!{.smaller}
 
 ::: columns
-::: {.column width="55%"}
+::: {.column width="70%"}
 
 -   A final year PhD student in the Department of Econometrics and Business Statistics, Monash University, Australia
 
@@ -48,12 +48,14 @@ library(icon)
 
 -   Find me on
 
-    -   Twitter: `huizezhangsh`,
-    -   GitHub: `huizezhang-sherry`, and
-    -   `https://huizezhangsh.netlify.app/`
+    - Twitter: `huizezhangsh`,
+    - GitHub: `huizezhang-sherry`, and
+    - <https://huizezhangsh.netlify.app/>
+    
+- slides for today: <https://sherryzhang-ireland2023.netlify.app/>
 :::
 
-::: {.column width="45%"}
+::: {.column width="30%"}
 ```{r}
 knitr::include_graphics(here::here("figures/headshot.jpg"))
 ```
@@ -352,17 +354,17 @@ On the other hand, we have tsibble that arranges time series data into a long fo
 ## Australian weather station data {.smaller}
 
 ```{r echo = FALSE}
-stations <- cubble::climate_subset %>% select(-ts)
-ts <- cubble::climate_subset %>% 
+stations <- cubble::climate_aus %>% filter(nrow(ts) == 366) %>% as_tibble() %>% filter(row_number() %% 7 == 1) %>% select(-ts)
+ts <- cubble::climate_aus  %>% 
   face_temporal() %>% 
-  filter(!is.na(tmax), !is.na(tmin)) %>% 
-  as_tibble()
+  as_tibble() %>% 
+  filter(id %in% stations$id)
 oz <- ozmaps::abs_ste %>% filter(NAME != "Other Territories")
 oz_simp <- oz %>% rmapshaper::ms_simplify(keep = 0.05) 
 ```
 
 ::: columns
-::: {.column width="60%"}
+::: {.column width="60%"} 
 ```{r}
 #| echo: true
 stations
@@ -583,7 +585,7 @@ weather_long %>% unfold(long, lat)
 
 :::
 
-# Explore temporal pattern across space {.text-bottom background-image="figures/temporal-pattern-across-space.png" background-size="80% 90%" background-position="center"}
+# Explore temporal pattern across space with a glyph map{.text-bottom background-image="figures/temporal-pattern-across-space.png" background-size="80% 90%" background-position="center"}
 
 ```{css echo=FALSE}
 .text-bottom h2{
@@ -606,7 +608,58 @@ A more holistic approach is to explore the space and time simultaneously and now
 
 ## Why do you need a glyph map?
 
-<a different motivation for glyph map>
+```{r}
+out <- GGally::nasa %>% 
+  group_split(long, lat) %>% 
+  map_dfr(~lm(surftemp ~ year + factor(month), data = .x) %>%
+            broom::augment(.x)) %>% 
+  mutate(diff = surftemp - .fitted)
+  
+library(sf)
+nasa_bbox <- out %>% st_as_sf(coords = c("long", "lat")) %>% st_bbox()
+coastline <- rnaturalearth::ne_coastline(returnclass = "sf") %>% st_crop(nasa_bbox)
+facet_plot <- out %>% 
+  ggplot() +
+  geom_tile(aes(x = long, y = lat, fill = diff)) + 
+  geom_sf(data = coastline, color = "grey") + 
+  scale_fill_gradient2(midpoint=0, mid="white", high="red", low="blue") + 
+  scale_y_continuous(breaks = c(-20, 0, 20, 40)) + 
+  scale_x_continuous(breaks = -100) +
+  facet_grid(year ~ month) + 
+  coord_sf()
+
+map_data <- rnaturalearth::ne_countries(returnclass = "sf") %>%
+  filter(continent %in% c("North America", "South America")) %>%
+  st_set_crs(st_crs(nasa)) %>% 
+  st_crop(nasa_bbox)
+
+glyph_plot <- out %>% 
+  ggplot() + 
+  geom_sf(data = map_data, color = "grey", fill = "grey") + 
+  geom_glyph(aes(x_major = long, y_major = lat, 
+                 x_minor = time, y_minor = diff), width = 2, height = 2) + 
+  coord_sf()
+  
+
+continent_america <- rnaturalearth::ne_countries(returnclass = "sf") %>%
+  filter(continent %in% c("North America", "South America")) %>% 
+  filter(name != "Greenland") %>% 
+  st_simplify(dTolerance = 500)
+
+location_guide <- ggplot() + 
+  geom_sf(data = continent_america, fill = "grey90", color = "white") + 
+  geom_sf(data = st_as_sf(st_as_sfc(nasa_bbox), crs = st_crs(continent_america)), color = "red", fill = "transparent", linewidth = 1) + 
+  geom_sf(data = map_data %>% st_set_crs(st_crs(continent_america)), fill = "grey70") + 
+  coord_sf() + 
+  theme_void()
+
+(location_guide | facet_plot) + patchwork::plot_layout(widths = c(1, 3))
+```
+
+:::{.footer}
+Modified from *Glyph-maps for Visually Exploring Temporal Patterns in Climate Data and Models* (Wickham, 2012)
+:::
+
 
 :::{.notes}
 
@@ -618,7 +671,10 @@ The problem of this type of visualisation is that it becomes difficult to compre
 
 ## Why do you need a glyph map?
 
-<a different motivation>
+```{r}
+#| fig-width: 10
+glyph_plot
+```
 
 :::{.notes}
 
@@ -682,26 +738,25 @@ cb <- as_cubble(
   key = id, index = date, coords = c(long, lat)
 )
 
-set.seed(0927)
 cb_glyph <- cb %>%
-  slice_sample(n = 20) %>%
   face_temporal() %>%
-  mutate(month = lubridate::month(date)) %>%
-  group_by(month) %>% 
-  summarise(tmax = mean(tmax, na.rm = TRUE)) %>%
+  group_by(month = lubridate::month(date)) %>% 
+  summarise(tmax = mean(tmax, na.rm = TRUE)) %>% 
   unfold(long, lat)
 
-ggplot() +
-  geom_sf(data = oz_simp, 
-          fill = "grey90", 
-          color = "white") +
-  geom_glyph(
-    data = cb_glyph,
-    aes(x_major = long, x_minor = month,
-        y_major = lat, y_minor = tmax),
-    width = 2, height = 0.7) + 
+cb_glyph %>% 
+  ggplot(aes(x_major = long, x_minor = month,
+             y_major = lat, y_minor = tmax)) +
+  geom_sf(data = oz_simp, fill = "grey90", 
+          color = "white", inherit.aes = FALSE) +
+  geom_glyph_box(width = 1.3, height = 0.5) + 
+  geom_glyph(width = 1.3, height = 0.5) + 
   ggthemes::theme_map()
 ```
+
+:::{.footer}
+<https://huizezhang-sherry.github.io/cubble/articles/glyph.html>
+:::
 
 :::{.notes}
  

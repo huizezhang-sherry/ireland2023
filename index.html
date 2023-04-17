@@ -402,7 +402,7 @@
 <section id="hi" class="title-slide slide level1 smaller center">
 <h1>Hi!</h1>
 <div class="columns">
-<div class="column" style="width:55%;">
+<div class="column" style="width:70%;">
 <ul>
 <li><p>A final year PhD student in the Department of Econometrics and Business Statistics, Monash University, Australia</p></li>
 <li><p>My research centers on exploring multivariate spatio-temporal data with data wrangling and visualisation tool.</p></li>
@@ -410,15 +410,16 @@
 <ul>
 <li>Twitter: <code>huizezhangsh</code>,</li>
 <li>GitHub: <code>huizezhang-sherry</code>, and</li>
-<li><code>https://huizezhangsh.netlify.app/</code></li>
+<li><a href="https://huizezhangsh.netlify.app/" class="uri">https://huizezhangsh.netlify.app/</a></li>
 </ul></li>
+<li><p>slides for today: <a href="https://sherryzhang-ireland2023.netlify.app/" class="uri">https://sherryzhang-ireland2023.netlify.app/</a></p></li>
 </ul>
-</div><div class="column" style="width:45%;">
+</div><div class="column" style="width:30%;">
 <div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-1_658dfdaaae52c11227be4560e805e7be">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/headshot.jpg" width="246"></p>
+<p><img data-src="figures/headshot.jpg" width="250"></p>
 </figure>
 </div>
 </div>
@@ -711,7 +712,7 @@
 </section>
 <section id="australian-weather-station-data" class="slide level2 smaller">
 <h2>Australian weather station data</h2>
-<div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-10_cca740fe74c743fffe4ab3649b12ae54">
+<div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-10_4cfd8775a6799796dfd483f30fc3c76e">
 
 </div>
 <div class="columns">
@@ -719,20 +720,20 @@
 <div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-11_4d6c842a735553173f661a6dfdcc3b22">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>stations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 30 × 6
-   id            lat  long  elev name                       wmo_id
-   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;                       &lt;dbl&gt;
- 1 ASN00060139 -31.4  153.   4.2 port macquarie airport aws  94786
- 2 ASN00068228 -34.4  151.  10   bellambi aws                94749
- 3 ASN00017123 -28.1  140.  37.8 moomba airport              95481
- 4 ASN00081049 -36.4  145. 114   tatura inst sustainable ag  95836
- 5 ASN00018201 -32.5  138.  14   port augusta aero           95666
- 6 ASN00012314 -27.8  121. 497   leinster aero               95448
- 7 ASN00036026 -24.3  144. 203   isisford post office        94345
- 8 ASN00024024 -34.4  141.  30.1 loxton research centre      94682
- 9 ASN00026095 -37.0  140.  17   cape jaffa (the limestone)  94813
-10 ASN00003057 -16.5  123.   7   cygnet bay                  94201
-# … with 20 more rows</code></pre>
+<pre><code># A tibble: 88 × 6
+   id            lat  long  elev name              wmo_id
+   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;
+ 1 ASN00001006 -15.5  128.   3.8 wyndham aero       95214
+ 2 ASN00002032 -17.0  128. 203   warmun             94213
+ 3 ASN00003080 -17.6  124.  77.5 curtin aero        94204
+ 4 ASN00005007 -22.2  114.   5   learmonth airport  94302
+ 5 ASN00006044 -25.9  114.   9   denham             94402
+ 6 ASN00007600 -28.1  118. 407   mount magnet aero  94429
+ 7 ASN00008296 -29.2  116. 271.  morawa airport     94417
+ 8 ASN00009114 -31.0  115.   4   lancelin           95606
+ 9 ASN00009240 -32.0  116. 384   bickley            95610
+10 ASN00009542 -33.7  122. 142   esperance aero     95638
+# … with 78 more rows</code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/data-stations_f3cf32dcab0bc26593d897c9ebbe7d17">
@@ -748,20 +749,20 @@
 <div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-12_5a6d415a95260560b8628fbd6d1ed206">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>ts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10,632 × 5
+<pre><code># A tibble: 32,208 × 5
    id          date        prcp  tmax  tmin
    &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 ASN00003057 2020-01-01     0  36.7  26.9
- 2 ASN00003057 2020-01-02    41  34.2  24  
- 3 ASN00003057 2020-01-03     0  35    25.4
- 4 ASN00003057 2020-01-04    40  29.1  25.4
- 5 ASN00003057 2020-01-05  1640  27.3  24.3
- 6 ASN00003057 2020-01-06  1832  29.2  23.2
- 7 ASN00003057 2020-01-07    42  36    21  
- 8 ASN00003057 2020-01-08   300  31.5  25  
- 9 ASN00003057 2020-01-09    90  32.2  25.3
-10 ASN00003057 2020-01-10     0  34    25.9
-# … with 10,622 more rows</code></pre>
+ 1 ASN00001006 2020-01-01   164  38.3  25.3
+ 2 ASN00001006 2020-01-02     0  40.6  30.5
+ 3 ASN00001006 2020-01-03    16  39.7  27.2
+ 4 ASN00001006 2020-01-04     0  38.2  27.3
+ 5 ASN00001006 2020-01-05     2  39.3  26.7
+ 6 ASN00001006 2020-01-06    60  32.9  25.6
+ 7 ASN00001006 2020-01-07   146  34.1  25.5
+ 8 ASN00001006 2020-01-08    40  36.6  26.2
+ 9 ASN00001006 2020-01-09     0  38.2  27.6
+10 ASN00001006 2020-01-10     0  38.9  29.7
+# … with 32,198 more rows</code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/data-ts_576d2a61819a04bfd340f0146c688cf1">
@@ -881,22 +882,22 @@
 <span id="cb5-3"><a href="#cb5-3"></a>  <span class="at">key =</span> id, <span class="at">index =</span> date, <span class="at">coords =</span> <span class="fu">c</span>(long, lat)</span>
 <span id="cb5-4"><a href="#cb5-4"></a>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># cubble:   id [30]: nested form
-# bbox:     [114.09, -41.88, 152.87, -11.65]
+<pre><code># cubble:   id [88]: nested form
+# bbox:     [113.53, -43.49, 153.64, -10.58]
 # temporal: date [date], prcp [dbl], tmax [dbl], tmin [dbl]
    id            lat  long  elev name              wmo_id ts                
    &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt; &lt;list&gt;            
- 1 ASN00003057 -16.5  123.   7   cygnet bay         94201 &lt;tibble [316 × 4]&gt;
- 2 ASN00005007 -22.2  114.   5   learmonth airport  94302 &lt;tibble [363 × 4]&gt;
- 3 ASN00005084 -21.5  115.   5   thevenard island   94303 &lt;tibble [366 × 4]&gt;
- 4 ASN00010515 -32.1  117. 199   beverley           95615 &lt;tibble [354 × 4]&gt;
- 5 ASN00012314 -27.8  121. 497   leinster aero      95448 &lt;tibble [366 × 4]&gt;
- 6 ASN00014401 -11.7  133.  19.2 warruwi            94139 &lt;tibble [354 × 4]&gt;
- 7 ASN00014703 -15.7  137.  12.2 centre island      94248 &lt;tibble [364 × 4]&gt;
- 8 ASN00017123 -28.1  140.  37.8 moomba airport     95481 &lt;tibble [361 × 4]&gt;
- 9 ASN00018201 -32.5  138.  14   port augusta aero  95666 &lt;tibble [364 × 4]&gt;
-10 ASN00022841 -35.7  138.   5   kingscote aero     95807 &lt;tibble [363 × 4]&gt;
-# … with 20 more rows</code></pre>
+ 1 ASN00001006 -15.5  128.   3.8 wyndham aero       95214 &lt;tibble [366 × 4]&gt;
+ 2 ASN00002032 -17.0  128. 203   warmun             94213 &lt;tibble [366 × 4]&gt;
+ 3 ASN00003080 -17.6  124.  77.5 curtin aero        94204 &lt;tibble [366 × 4]&gt;
+ 4 ASN00005007 -22.2  114.   5   learmonth airport  94302 &lt;tibble [366 × 4]&gt;
+ 5 ASN00006044 -25.9  114.   9   denham             94402 &lt;tibble [366 × 4]&gt;
+ 6 ASN00007600 -28.1  118. 407   mount magnet aero  94429 &lt;tibble [366 × 4]&gt;
+ 7 ASN00008296 -29.2  116. 271.  morawa airport     94417 &lt;tibble [366 × 4]&gt;
+ 8 ASN00009114 -31.0  115.   4   lancelin           95606 &lt;tibble [366 × 4]&gt;
+ 9 ASN00009240 -32.0  116. 384   bickley            95610 &lt;tibble [366 × 4]&gt;
+10 ASN00009542 -33.7  122. 142   esperance aero     95638 &lt;tibble [366 × 4]&gt;
+# … with 78 more rows</code></pre>
 </div>
 </div>
 <ul>
@@ -940,23 +941,23 @@
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>(weather_long <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
 <span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">face_temporal</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># cubble:  date, id [30]: long form
-# bbox:    [114.09, -41.88, 152.87, -11.65]
+<pre><code># cubble:  date, id [88]: long form
+# bbox:    [113.53, -43.49, 153.64, -10.58]
 # spatial: lat [dbl], long [dbl], elev [dbl],
 #   name [chr], wmo_id [dbl]
    id          date        prcp  tmax  tmin
    &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 ASN00003057 2020-01-01     0  36.7  26.9
- 2 ASN00003057 2020-01-02    41  34.2  24  
- 3 ASN00003057 2020-01-03     0  35    25.4
- 4 ASN00003057 2020-01-04    40  29.1  25.4
- 5 ASN00003057 2020-01-05  1640  27.3  24.3
- 6 ASN00003057 2020-01-06  1832  29.2  23.2
- 7 ASN00003057 2020-01-07    42  36    21  
- 8 ASN00003057 2020-01-08   300  31.5  25  
- 9 ASN00003057 2020-01-09    90  32.2  25.3
-10 ASN00003057 2020-01-10     0  34    25.9
-# … with 10,622 more rows</code></pre>
+ 1 ASN00001006 2020-01-01   164  38.3  25.3
+ 2 ASN00001006 2020-01-02     0  40.6  30.5
+ 3 ASN00001006 2020-01-03    16  39.7  27.2
+ 4 ASN00001006 2020-01-04     0  38.2  27.3
+ 5 ASN00001006 2020-01-05     2  39.3  26.7
+ 6 ASN00001006 2020-01-06    60  32.9  25.6
+ 7 ASN00001006 2020-01-07   146  34.1  25.5
+ 8 ASN00001006 2020-01-08    40  36.6  26.2
+ 9 ASN00001006 2020-01-09     0  38.2  27.6
+10 ASN00001006 2020-01-10     0  38.9  29.7
+# … with 32,198 more rows</code></pre>
 </div>
 </div>
 </div><div class="column">
@@ -965,23 +966,23 @@
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>(weather_back <span class="ot">&lt;-</span> weather_long <span class="sc">%&gt;%</span> </span>
 <span id="cb9-2"><a href="#cb9-2"></a>   <span class="fu">face_spatial</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># cubble:   id [30]: nested form
-# bbox:     [114.09, -41.88, 152.87, -11.65]
+<pre><code># cubble:   id [88]: nested form
+# bbox:     [113.53, -43.49, 153.64, -10.58]
 # temporal: date [date], prcp [dbl], tmax [dbl],
 #   tmin [dbl]
    id        lat  long  elev name  wmo_id ts      
    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;list&gt;  
- 1 ASN000… -16.5  123.   7   cygn…  94201 &lt;tibble&gt;
- 2 ASN000… -22.2  114.   5   lear…  94302 &lt;tibble&gt;
- 3 ASN000… -21.5  115.   5   thev…  94303 &lt;tibble&gt;
- 4 ASN000… -32.1  117. 199   beve…  95615 &lt;tibble&gt;
- 5 ASN000… -27.8  121. 497   lein…  95448 &lt;tibble&gt;
- 6 ASN000… -11.7  133.  19.2 warr…  94139 &lt;tibble&gt;
- 7 ASN000… -15.7  137.  12.2 cent…  94248 &lt;tibble&gt;
- 8 ASN000… -28.1  140.  37.8 moom…  95481 &lt;tibble&gt;
- 9 ASN000… -32.5  138.  14   port…  95666 &lt;tibble&gt;
-10 ASN000… -35.7  138.   5   king…  95807 &lt;tibble&gt;
-# … with 20 more rows</code></pre>
+ 1 ASN000… -15.5  128.   3.8 wynd…  95214 &lt;tibble&gt;
+ 2 ASN000… -17.0  128. 203   warm…  94213 &lt;tibble&gt;
+ 3 ASN000… -17.6  124.  77.5 curt…  94204 &lt;tibble&gt;
+ 4 ASN000… -22.2  114.   5   lear…  94302 &lt;tibble&gt;
+ 5 ASN000… -25.9  114.   9   denh…  94402 &lt;tibble&gt;
+ 6 ASN000… -28.1  118. 407   moun…  94429 &lt;tibble&gt;
+ 7 ASN000… -29.2  116. 271.  mora…  94417 &lt;tibble&gt;
+ 8 ASN000… -31.0  115.   4   lanc…  95606 &lt;tibble&gt;
+ 9 ASN000… -32.0  116. 384   bick…  95610 &lt;tibble&gt;
+10 ASN000… -33.7  122. 142   espe…  95638 &lt;tibble&gt;
+# … with 78 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">identical</span>(weather_back, weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1026,22 +1027,22 @@
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>weather <span class="sc">%&gt;%</span> </span>
 <span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">mutate</span>(<span class="at">avg_tmax =</span> <span class="fu">mean</span>(ts<span class="sc">$</span>tmax, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># cubble:   id [30]: nested form
-# bbox:     [114.09, -41.88, 152.87, -11.65]
+<pre><code># cubble:   id [88]: nested form
+# bbox:     [113.53, -43.49, 153.64, -10.58]
 # temporal: date [date], prcp [dbl], tmax [dbl], tmin [dbl]
    id            lat  long  elev name              wmo_id ts                 avg_tmax
    &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt; &lt;list&gt;                &lt;dbl&gt;
- 1 ASN00003057 -16.5  123.   7   cygnet bay         94201 &lt;tibble [316 × 4]&gt;     32.4
- 2 ASN00005007 -22.2  114.   5   learmonth airport  94302 &lt;tibble [363 × 4]&gt;     33.2
- 3 ASN00005084 -21.5  115.   5   thevenard island   94303 &lt;tibble [366 × 4]&gt;     30.7
- 4 ASN00010515 -32.1  117. 199   beverley           95615 &lt;tibble [354 × 4]&gt;     26.4
- 5 ASN00012314 -27.8  121. 497   leinster aero      95448 &lt;tibble [366 × 4]&gt;     29.6
- 6 ASN00014401 -11.7  133.  19.2 warruwi            94139 &lt;tibble [354 × 4]&gt;     31.8
- 7 ASN00014703 -15.7  137.  12.2 centre island      94248 &lt;tibble [364 × 4]&gt;     31.9
- 8 ASN00017123 -28.1  140.  37.8 moomba airport     95481 &lt;tibble [361 × 4]&gt;     29.0
- 9 ASN00018201 -32.5  138.  14   port augusta aero  95666 &lt;tibble [364 × 4]&gt;     25.7
-10 ASN00022841 -35.7  138.   5   kingscote aero     95807 &lt;tibble [363 × 4]&gt;     20.6
-# … with 20 more rows</code></pre>
+ 1 ASN00001006 -15.5  128.   3.8 wyndham aero       95214 &lt;tibble [366 × 4]&gt;     36.7
+ 2 ASN00002032 -17.0  128. 203   warmun             94213 &lt;tibble [366 × 4]&gt;     35.8
+ 3 ASN00003080 -17.6  124.  77.5 curtin aero        94204 &lt;tibble [366 × 4]&gt;     35.9
+ 4 ASN00005007 -22.2  114.   5   learmonth airport  94302 &lt;tibble [366 × 4]&gt;     33.2
+ 5 ASN00006044 -25.9  114.   9   denham             94402 &lt;tibble [366 × 4]&gt;     27.1
+ 6 ASN00007600 -28.1  118. 407   mount magnet aero  94429 &lt;tibble [366 × 4]&gt;     30.3
+ 7 ASN00008296 -29.2  116. 271.  morawa airport     94417 &lt;tibble [366 × 4]&gt;     28.8
+ 8 ASN00009114 -31.0  115.   4   lancelin           95606 &lt;tibble [366 × 4]&gt;     24.8
+ 9 ASN00009240 -32.0  116. 384   bickley            95610 &lt;tibble [366 × 4]&gt;     22.8
+10 ASN00009542 -33.7  122. 142   esperance aero     95638 &lt;tibble [366 × 4]&gt;     22.8
+# … with 78 more rows</code></pre>
 </div>
 </div>
 <div class="fragment">
@@ -1049,22 +1050,22 @@
 <div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-22_b32939c0d7e326774c3793902c7cb627">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>weather_long <span class="sc">%&gt;%</span> <span class="fu">unfold</span>(long, lat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># cubble:  date, id [30]: long form
-# bbox:    [114.09, -41.88, 152.87, -11.65]
+<pre><code># cubble:  date, id [88]: long form
+# bbox:    [113.53, -43.49, 153.64, -10.58]
 # spatial: lat [dbl], long [dbl], elev [dbl], name [chr], wmo_id [dbl]
    id          date        prcp  tmax  tmin  long   lat
    &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 ASN00003057 2020-01-01     0  36.7  26.9  123. -16.5
- 2 ASN00003057 2020-01-02    41  34.2  24    123. -16.5
- 3 ASN00003057 2020-01-03     0  35    25.4  123. -16.5
- 4 ASN00003057 2020-01-04    40  29.1  25.4  123. -16.5
- 5 ASN00003057 2020-01-05  1640  27.3  24.3  123. -16.5
- 6 ASN00003057 2020-01-06  1832  29.2  23.2  123. -16.5
- 7 ASN00003057 2020-01-07    42  36    21    123. -16.5
- 8 ASN00003057 2020-01-08   300  31.5  25    123. -16.5
- 9 ASN00003057 2020-01-09    90  32.2  25.3  123. -16.5
-10 ASN00003057 2020-01-10     0  34    25.9  123. -16.5
-# … with 10,622 more rows</code></pre>
+ 1 ASN00001006 2020-01-01   164  38.3  25.3  128. -15.5
+ 2 ASN00001006 2020-01-02     0  40.6  30.5  128. -15.5
+ 3 ASN00001006 2020-01-03    16  39.7  27.2  128. -15.5
+ 4 ASN00001006 2020-01-04     0  38.2  27.3  128. -15.5
+ 5 ASN00001006 2020-01-05     2  39.3  26.7  128. -15.5
+ 6 ASN00001006 2020-01-06    60  32.9  25.6  128. -15.5
+ 7 ASN00001006 2020-01-07   146  34.1  25.5  128. -15.5
+ 8 ASN00001006 2020-01-08    40  36.6  26.2  128. -15.5
+ 9 ASN00001006 2020-01-09     0  38.2  27.6  128. -15.5
+10 ASN00001006 2020-01-10     0  38.9  29.7  128. -15.5
+# … with 32,198 more rows</code></pre>
 </div>
 </div>
 <aside class="notes">
@@ -1090,8 +1091,8 @@
 </div>
 </section></section>
 <section>
-<section id="explore-temporal-pattern-across-space" class="title-slide slide level1 text-bottom center" data-background-image="figures/temporal-pattern-across-space.png" data-background-size="80% 90%" data-background-position="center">
-<h1>Explore temporal pattern across space</h1>
+<section id="explore-temporal-pattern-across-space-with-a-glyph-map" class="title-slide slide level1 text-bottom center" data-background-image="figures/temporal-pattern-across-space.png" data-background-size="80% 90%" data-background-position="center">
+<h1>Explore temporal pattern across space with a glyph map</h1>
 <div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-23_dc538de2461a04942b6a38cdec8418ee">
 <style type="text/css">
 .text-bottom h2{
@@ -1122,7 +1123,10 @@
 </section>
 <section id="why-do-you-need-a-glyph-map" class="slide level2">
 <h2>Why do you need a glyph map?</h2>
-<p><a different="" motivation="" for="" glyph="" map="" href=""></a></p><a different="" motivation="" for="" glyph="" map="" href="">
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer">
+<p>Modified from <em>Glyph-maps for Visually Exploring Temporal Patterns in Climate Data and Models</em> (Wickham, 2012)</p>
+</div>
 <aside class="notes">
 <p>Here is a typical plot you may have seen when someone tries to visualise their spatio-temporal data. The x and y axes are the coordinates, here I simplify it with only two points, but in reality you may see a collection of points in space or a raster image. Each facet here shows the space in different timestamp and the values are mapped into color.</p>
 <p>The problem of this type of visualisation is that it becomes difficult to comprehend the temporal structure of the data since you have to compare points at the same location across panels to digest the pattern.</p>
@@ -1137,11 +1141,11 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</a></section><a different="" motivation="" for="" glyph="" map="" href="">
-</a><section id="why-do-you-need-a-glyph-map-1" class="slide level2"><a different="" motivation="" for="" glyph="" map="" href="">
+</section>
+<section id="why-do-you-need-a-glyph-map-1" class="slide level2">
 <h2>Why do you need a glyph map?</h2>
-</a><p><a different="" motivation="" for="" glyph="" map="" href=""></a><a different="" motivation="" href=""></a></p><a different="" motivation="" href="">
-<aside class="notes">
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-25-1.png" width="960" class="r-stretch quarto-figure-center"><aside class="notes">
 <p>Instead the temporal pattern is much easier to observe if shown in a time series plot.</p>
 <p>What a glyph map do is to put the time series glyph in the place of the location, so you can see the temporal trend in the space.</p>
 <style type="text/css">
@@ -1155,20 +1159,12 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</a></section><a different="" motivation="" href="">
-</a><section id="glyph-map-transformation" class="slide level2"><a different="" motivation="" href="">
+</section>
+<section id="glyph-map-transformation" class="slide level2">
 <h2>Glyph map transformation</h2>
-<div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-24_afeb231b26fa52e5923ef2515851f848">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/glyph-steps.png" width="1354"></p>
-</figure>
-</div>
-</div>
-</div>
-</a><div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-25_564f3597935bb2255edf936c3e03cf3e"><a different="" motivation="" href="">
-</a><div class="sourceCode cell-code" id="cb17"><a different="" motivation="" href=""></a><pre class="sourceCode numberSource r number-lines code-with-copy"><a different="" motivation="" href=""><code class="sourceCode r"><span id="cb17-1"></span></code></a><code class="sourceCode r"><a href="#cb17-1"></a>DATA <span class="sc">%&gt;%</span>
+
+<img data-src="figures/glyph-steps.png" width="1354" class="r-stretch quarto-figure-center"><div class="cell" data-layout-align="center" data-hash="index_cache/revealjs/unnamed-chunk-27_4ac4744ae2f73e3f2754a82bd899440c">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>DATA <span class="sc">%&gt;%</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb17-3"><a href="#cb17-3"></a>  <span class="fu">geom_glyph</span>(</span>
 <span id="cb17-4"><a href="#cb17-4"></a>    <span class="fu">aes</span>(<span class="at">x_major =</span> X_MAJOR, <span class="at">x_minor =</span> X_MINOR,</span>
@@ -1203,32 +1199,27 @@
 </section>
 <section id="avg.-max.-temperature-on-the-map" class="slide level2 smaller">
 <h2>Avg. max. temperature on the map</h2>
-<div class="cell columns column-output-location" data-layout-align="center" data-hash="index_cache/revealjs/glyphmap_852a5b463d1300b02e1f583e5fb3f06b">
+<div class="cell columns column-output-location" data-layout-align="center" data-hash="index_cache/revealjs/glyphmap_cdcf2b2e3f920b180e5b5a19ff66cc9b">
 <div class="column">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>cb <span class="ot">&lt;-</span> <span class="fu">as_cubble</span>(</span>
 <span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">list</span>(<span class="at">spatial =</span> stations, <span class="at">temporal =</span> ts),</span>
 <span id="cb18-3"><a href="#cb18-3"></a>  <span class="at">key =</span> id, <span class="at">index =</span> date, <span class="at">coords =</span> <span class="fu">c</span>(long, lat)</span>
 <span id="cb18-4"><a href="#cb18-4"></a>)</span>
 <span id="cb18-5"><a href="#cb18-5"></a></span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="fu">set.seed</span>(<span class="dv">0927</span>)</span>
-<span id="cb18-7"><a href="#cb18-7"></a>cb_glyph <span class="ot">&lt;-</span> cb <span class="sc">%&gt;%</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb18-9"><a href="#cb18-9"></a>  <span class="fu">face_temporal</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb18-10"><a href="#cb18-10"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(date)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-11"><a href="#cb18-11"></a>  <span class="fu">group_by</span>(month) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-12"><a href="#cb18-12"></a>  <span class="fu">summarise</span>(<span class="at">tmax =</span> <span class="fu">mean</span>(tmax, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-13"><a href="#cb18-13"></a>  <span class="fu">unfold</span>(long, lat)</span>
-<span id="cb18-14"><a href="#cb18-14"></a></span>
-<span id="cb18-15"><a href="#cb18-15"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb18-16"><a href="#cb18-16"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> oz_simp, </span>
-<span id="cb18-17"><a href="#cb18-17"></a>          <span class="at">fill =</span> <span class="st">"grey90"</span>, </span>
-<span id="cb18-18"><a href="#cb18-18"></a>          <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb18-19"><a href="#cb18-19"></a>  <span class="fu">geom_glyph</span>(</span>
-<span id="cb18-20"><a href="#cb18-20"></a>    <span class="at">data =</span> cb_glyph,</span>
-<span id="cb18-21"><a href="#cb18-21"></a>    <span class="fu">aes</span>(<span class="at">x_major =</span> long, <span class="at">x_minor =</span> month,</span>
-<span id="cb18-22"><a href="#cb18-22"></a>        <span class="at">y_major =</span> lat, <span class="at">y_minor =</span> tmax),</span>
-<span id="cb18-23"><a href="#cb18-23"></a>    <span class="at">width =</span> <span class="dv">2</span>, <span class="at">height =</span> <span class="fl">0.7</span>) <span class="sc">+</span> </span>
-<span id="cb18-24"><a href="#cb18-24"></a>  ggthemes<span class="sc">::</span><span class="fu">theme_map</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-6"><a href="#cb18-6"></a>cb_glyph <span class="ot">&lt;-</span> cb <span class="sc">%&gt;%</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a>  <span class="fu">face_temporal</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>  <span class="fu">group_by</span>(<span class="at">month =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(date)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-9"><a href="#cb18-9"></a>  <span class="fu">summarise</span>(<span class="at">tmax =</span> <span class="fu">mean</span>(tmax, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-10"><a href="#cb18-10"></a>  <span class="fu">unfold</span>(long, lat)</span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a>cb_glyph <span class="sc">%&gt;%</span> </span>
+<span id="cb18-13"><a href="#cb18-13"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x_major =</span> long, <span class="at">x_minor =</span> month,</span>
+<span id="cb18-14"><a href="#cb18-14"></a>             <span class="at">y_major =</span> lat, <span class="at">y_minor =</span> tmax)) <span class="sc">+</span></span>
+<span id="cb18-15"><a href="#cb18-15"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> oz_simp, <span class="at">fill =</span> <span class="st">"grey90"</span>, </span>
+<span id="cb18-16"><a href="#cb18-16"></a>          <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb18-17"><a href="#cb18-17"></a>  <span class="fu">geom_glyph_box</span>(<span class="at">width =</span> <span class="fl">1.3</span>, <span class="at">height =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb18-18"><a href="#cb18-18"></a>  <span class="fu">geom_glyph</span>(<span class="at">width =</span> <span class="fl">1.3</span>, <span class="at">height =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb18-19"><a href="#cb18-19"></a>  ggthemes<span class="sc">::</span><span class="fu">theme_map</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div><div class="column">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1238,6 +1229,9 @@
 </div>
 </div>
 </div>
+</div>
+<div class="footer">
+<p><a href="https://huizezhang-sherry.github.io/cubble/articles/glyph.html" class="uri">https://huizezhang-sherry.github.io/cubble/articles/glyph.html</a></p>
 </div>
 <aside class="notes">
 <p>Here is an example of using cubble</p>
